@@ -2,12 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestTestController;
-use App\Http\Controllers\Blog\PostController; 
+use App\Http\Controllers\Blog\PostController as BlogPostController;
+use App\Http\Controllers\Blog\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Blog\Admin\CategoryController as AdminCategoryController;
 
+// Головна сторінка
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Авторизовані користувачі
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -18,26 +22,25 @@ Route::middleware([
     })->name('dashboard');
 });
 
-// REST-тестові маршрути
-Route::resource('rest', RestTestController::class)->names('restTest');
+// REST-тест
+Route::resource('rest', RestTestController::class)
+    ->names('restTest');
 
-// Група маршрутів для блогу
-Route::group([
-    'namespace' => 'App\Http\Controllers\Blog',
-    'prefix' => 'blog'
-], function () {
-    Route::resource('posts', PostController::class)->names('blog.posts');
+// Гостьова частина блогу
+Route::prefix('blog')->group(function () {
+    Route::resource('posts', BlogPostController::class)
+        ->names('blog.posts');
 });
 
-//Адмінка
-$groupData = [
-    'namespace' => 'App\Http\Controllers\Blog\Admin',
-    'prefix' => 'admin/blog',
-];
-Route::group($groupData, function () {
-    //BlogCategory
-    $methods = ['index','edit','store','update','create',];
-    Route::resource('categories', CategoryController::class)
-    ->only($methods)
-    ->names('blog.admin.categories'); 
- });
+// Адмінка
+Route::prefix('admin/blog')->group(function () {
+    // Категорії
+    Route::resource('categories', AdminCategoryController::class)
+        ->only(['index', 'edit', 'store', 'update', 'create'])
+        ->names('blog.admin.categories');
+
+    // Пости
+    Route::resource('posts', AdminPostController::class)
+        ->except(['show']) // не робити маршрут для show
+        ->names('blog.admin.posts');
+});
