@@ -42,7 +42,11 @@ class PostController extends BaseController
      */
     public function create()
     {
-        //
+          $item = new BlogPost();
+        $categoryList = $this->blogCategoryRepository->getForComboBox();
+        
+
+        return view('blog.admin.posts.edit', compact('item', 'categoryList'));
     }
 
     /**
@@ -50,7 +54,19 @@ class PostController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+         $data = $request->input(); //отримаємо масив даних, які надійшли з форми
+
+        $item = (new BlogPost())->create($data); //створюємо об'єкт і додаємо в БД
+
+        if ($item) {
+            return redirect()
+                ->route('blog.admin.posts.edit', [$item->id])
+                ->with(['success' => 'Успішно збережено']);
+        } else {
+            return back()
+                ->withErrors(['msg' => 'Помилка збереження'])
+                ->withInput();
+        }
     }
 
     /**
