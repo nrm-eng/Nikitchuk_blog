@@ -5,6 +5,7 @@ use App\Http\Controllers\RestTestController;
 use App\Http\Controllers\Blog\PostController as BlogPostController;
 use App\Http\Controllers\Blog\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Blog\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\DiggingDeeperController;
 
 // Головна сторінка
 Route::get('/', function () {
@@ -20,6 +21,15 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::group(['prefix' => 'digging_deeper'], function () {
+
+    Route::get('collections', [DiggingDeeperController::class, 'collections'])
+
+        ->name('digging_deeper.collections');
+
+});
+    
 });
 
 // REST-тест
