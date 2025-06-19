@@ -24,12 +24,16 @@ Route::middleware([
 
     Route::group(['prefix' => 'digging_deeper'], function () {
 
-    Route::get('collections', [DiggingDeeperController::class, 'collections'])
+        Route::get('collections', [DiggingDeeperController::class, 'collections'])
+            ->name('digging_deeper.collections');
 
-        ->name('digging_deeper.collections');
+        Route::get('process-video', [DiggingDeeperController::class, 'processVideo'])
+            ->name('digging_deeper.processVideo');
 
-});
-    
+        Route::get('prepare-catalog', [DiggingDeeperController::class, 'prepareCatalog'])
+            ->name('digging_deeper.prepareCatalog');
+
+    });
 });
 
 // REST-тест
@@ -51,6 +55,6 @@ Route::prefix('admin/blog')->group(function () {
 
     // Пости
     Route::resource('posts', AdminPostController::class)
-        ->except(['show']) // не робити маршрут для show
+        ->except(['show']) // не створювати маршрут для show
         ->names('blog.admin.posts');
 });
